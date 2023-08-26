@@ -11,5 +11,11 @@
   },
   "dependencies": {
     "astro": "^2.10.14"
+  },
+  "devDependencies": {
+    "@octokit/rest": "^20.0.1",
+    "astro-iconify": "^1.2.0",
+    "iconify-icon": "^1.0.8",
+    "sass": "^1.66.1"
   }
 }
