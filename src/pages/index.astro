@@ -2,10 +2,15 @@
 import { Octokit } from '@octokit/rest'
 import { Icon } from 'astro-iconify'
 import '../scss/style.scss'
-
+import { Markdown } from '@astropub/md'
+const organization = 'OM-MediaWorks'
 const octokit = new Octokit({
 	'auth': import.meta.env.SECRET_GITHUB
 })
+
+const introduction = await  fetch(`https://raw.githubusercontent.com/${organization}/.github/main/profile/readme.md`)
+	.then(response => response.text())
+
 const response = await octokit.rest.repos
   .listForOrg({
     org: "om-mediaworks",
@@ -34,7 +39,14 @@ const projects = await Promise.all(response.data
 		<title>MediaWorks</title>
 	</head>
 	<body>
-		<div class="container p-2">
+		<div class="container p-2 mt-4">
+			<header class="site-header">
+				<img src="/mediaworks-logo.png" class="logo"/>
+				<div class="introduction">
+					<Markdown of={introduction} />
+				</div>
+			</header>
+
 			<div class="list-group">
 			{projects.map(project => {
 				const Element = project.issues.length ? 'details' : 'div'
@@ -42,7 +54,7 @@ const projects = await Promise.all(response.data
 				const header = <header class="d-inline">
 					<h2 class="d-inline">
 						<span>{project.name}</span>
-						<a href={project.html_url}><Icon name="akar-icons:github-fill" /></a>
+						<a target="_blank" href={project.html_url}><Icon name="akar-icons:github-fill" /></a>
 						{project.homepage ? <a href={project.homepage}><Icon name="heroicons-solid:external-link" /></a> : null}
 					</h2>
 					<p>{project.description}</p>
@@ -55,7 +67,7 @@ const projects = await Promise.all(response.data
 				return <Element class={`list-group-item project ${project.issues.length ? 'has-issues' : ''}`}>
 					{project.issues.length ? <summary>{header}</summary> : header }
 					{project.issues.length ? <ul class="issues pt-4">
-						{project.issues.map(issue => <li><a href={issue.url}>{issue.title}</a></li>)}
+						{project.issues.map(issue => <li><a target="_blank" href={issue.html_url}>{issue.title}</a></li>)}
 					</ul>	: null}
 				</Element>
 			})}
